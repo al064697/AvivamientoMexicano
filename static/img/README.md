@@ -1,3 +1,3 @@
-Coloca aquí el PNG que contiene únicamente el símbolo de fuego con este nombre exacto:
+El PNG de este directorio contiene únicamente el símbolo de fuego:
 
-logo-mark.png
+logo-principal.png
