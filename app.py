@@ -2,6 +2,7 @@ import json, os, re, uuid
 from datetime import datetime, timezone
 from functools import wraps
 from pathlib import Path
+from urllib.request import Request, urlopen
 
 from flask import Flask, jsonify, redirect, render_template, request, session, url_for
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -11,6 +12,8 @@ BASE_DIR = Path(__file__).resolve().parent
 DATA_FILE = BASE_DIR / "datos.json"
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "dev-only-change-this-secret")
+SUPABASE_URL = os.environ.get("SUPABASE_URL", "").rstrip("/")
+SUPABASE_SERVICE_ROLE_KEY = os.environ.get("SUPABASE_SERVICE_ROLE_KEY", "")
 REGISTRATION_FIELD_LABELS = {
     "full_name": "Nombre completo",
     "age": "Edad",
@@ -44,13 +47,47 @@ def save_data(data):
     temporary_file.replace(DATA_FILE)
 
 
+def supabase_enabled():
+    return bool(SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY)
+
+
+def supabase_request(resource, method="GET", payload=None):
+    body = None if payload is None else json.dumps(payload).encode("utf-8")
+    request = Request(
+        f"{SUPABASE_URL}/rest/v1/{resource}",
+        data=body,
+        headers={
+            "apikey": SUPABASE_SERVICE_ROLE_KEY,
+            "Authorization": f"Bearer {SUPABASE_SERVICE_ROLE_KEY}",
+            "Content-Type": "application/json",
+            "Prefer": "return=minimal"
+        },
+        method=method
+    )
+    with urlopen(request, timeout=10) as response:
+        response_body = response.read()
+        return json.loads(response_body) if response_body else None
+
+
+def supabase_admin():
+    records = supabase_request("admins?select=username,password_hash&limit=1")
+    return records[0] if records else None
+
+
+def get_registrations():
+    if supabase_enabled():
+        return supabase_request("registrations?select=*&order=created_at.desc") or []
+    return list(reversed(load_data().get("registrations", [])))
+
+
 def admin_is_configured(data=None):
-    admin = (data or load_data()).get("admin", {})
+    admin = (data or (supabase_admin() if supabase_enabled() else load_data().get("admin", {})))
     return bool(admin.get("username") and admin.get("password_hash"))
 
 
 def admin_password_is_valid(password):
-    password_hash = load_data().get("admin", {}).get("password_hash")
+    admin = supabase_admin() if supabase_enabled() else load_data().get("admin", {})
+    password_hash = admin.get("password_hash")
     return bool(password_hash and check_password_hash(password_hash, password))
 
 
@@ -113,10 +150,10 @@ def create_registration():
     if not re.fullmatch(r"[^@\s]+@[^@\s]+\.[^@\s]+", registration["email"]):
         return jsonify(error="Escribe un correo electrónico válido."), 400
 
-    data = load_data()
+    existing_registrations = get_registrations()
     email_exists = any(
         item.get("email", "").lower() == registration["email"].lower()
-        for item in data.get("registrations", [])
+        for item in existing_registrations
     )
     if email_exists:
         return jsonify(error="Este correo ya tiene un registro."), 409
@@ -126,8 +163,12 @@ def create_registration():
         "created_at": datetime.now(timezone.utc).isoformat(),
         "status": "registered"
     })
-    data.setdefault("registrations", []).append(registration)
-    save_data(data)
+    if supabase_enabled():
+        supabase_request("registrations", method="POST", payload=registration)
+    else:
+        data = load_data()
+        data.setdefault("registrations", []).append(registration)
+        save_data(data)
     return jsonify(message="Registro completado."), 201
 
 
@@ -148,12 +189,16 @@ def admin_setup():
         elif password != confirmation:
             error = "Las contraseñas no coinciden."
         else:
-            data = load_data()
-            data["admin"] = {
+            admin = {
                 "username": username,
                 "password_hash": generate_password_hash(password)
             }
-            save_data(data)
+            if supabase_enabled():
+                supabase_request("admins", method="POST", payload=admin)
+            else:
+                data = load_data()
+                data["admin"] = admin
+                save_data(data)
             session["admin_authenticated"] = True
             return redirect(url_for("admin_dashboard"))
     return render_template("admin_setup.html", error=error)
@@ -168,7 +213,8 @@ def admin_login():
     if request.method == "POST":
         username = clean(request.form.get("username"))
         password = request.form.get("password", "")
-        admin_username = load_data().get("admin", {}).get("username", "admin")
+        admin = supabase_admin() if supabase_enabled() else load_data().get("admin", {})
+        admin_username = admin.get("username", "admin")
         if username == admin_username and admin_password_is_valid(password):
             session["admin_authenticated"] = True
             return redirect(url_for("admin_dashboard"))
@@ -184,7 +230,7 @@ def login():
 @app.get("/admin")
 @admin_required
 def admin_dashboard():
-    registrations = list(reversed(load_data().get("registrations", [])))
+    registrations = get_registrations()
     existing_fields = {field for person in registrations for field in person}
     ordered_fields = [field for field in REGISTRATION_FIELD_ORDER if field in existing_fields]
     additional_fields = sorted(existing_fields.difference(ordered_fields))

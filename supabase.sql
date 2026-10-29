@@ -24,3 +24,12 @@ create policy "Anyone can register with consent"
   for insert
   to anon
   with check (consent = true);
+
+create table public.admins (
+  id uuid primary key default gen_random_uuid(),
+  username text not null unique,
+  password_hash text not null,
+  created_at timestamptz not null default now()
+);
+
+alter table public.admins enable row level security;
