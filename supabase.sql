@@ -1,4 +1,4 @@
-create table public.registrations (
+create table if not exists public.registrations (
   id uuid primary key default gen_random_uuid(),
   event_slug text not null default 'avivamiento-mexicano',
   full_name text not null,
@@ -19,13 +19,15 @@ create table public.registrations (
 
 alter table public.registrations enable row level security;
 
+drop policy if exists "Anyone can register with consent" on public.registrations;
+
 create policy "Anyone can register with consent"
   on public.registrations
   for insert
   to anon
   with check (consent = true);
 
-create table public.admins (
+create table if not exists public.admins (
   id uuid primary key default gen_random_uuid(),
   username text not null unique,
   password_hash text not null,
