@@ -81,12 +81,12 @@ def get_registrations():
 
 
 def admin_is_configured(data=None):
-    admin = (data or (supabase_admin() if supabase_enabled() else load_data().get("admin", {})))
+    admin = data or (supabase_admin() if supabase_enabled() else load_data().get("admin", {})) or {}
     return bool(admin.get("username") and admin.get("password_hash"))
 
 
 def admin_password_is_valid(password):
-    admin = supabase_admin() if supabase_enabled() else load_data().get("admin", {})
+    admin = (supabase_admin() if supabase_enabled() else load_data().get("admin", {})) or {}
     password_hash = admin.get("password_hash")
     return bool(password_hash and check_password_hash(password_hash, password))
 
