@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="es">
+  <head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>Registro | Avivamiento Mexicano</title><link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" /></head>
+  <body>
+    <header class="site-header"><a class="brand" href="{{ url_for('home') }}"><span class="brand-mark" aria-hidden="true"><i></i><b></b></span><span>Avivamiento<br /><em>Mexicano</em></span></a><a class="header-cta" href="{{ url_for('home') }}">Volver al inicio</a></header>
+    <main class="page-section"><div class="page-heading"><div class="section-kicker">03 / Hazlo personal</div><h1>Reserva<br /><em>tu lugar.</em></h1><p>Completa tus datos para registrarte al congreso. Los campos marcados son obligatorios.</p></div>
+      <form class="register-form" id="registration-form">
+        <div class="form-section-title">Información personal</div>
+        <label>Nombre completo<input name="full_name" placeholder="Escribe tu nombre" autocomplete="name" required /></label>
+        <label>Edad<input type="number" name="age" min="1" max="120" placeholder="Ej. 25" required /></label>
+        <label>Sexo<select name="sex" required><option value="" selected disabled>Selecciona una opción</option><option>Mujer</option><option>Hombre</option></select></label>
+        <label>Número de teléfono<input type="tel" name="phone" placeholder="+52 55 0000 0000" autocomplete="tel" required /></label>
+        <label>Email<input type="email" name="email" placeholder="nombre@correo.com" autocomplete="email" required /></label>
+        <label>Ciudad / Estado<input name="location" placeholder="Ej. Puebla, Puebla" required /></label>
+        <div class="form-section-title">Información ministerial</div>
+        <label>Iglesia<input name="church" placeholder="Nombre de tu iglesia" required /></label>
+        <label>Ciudad de la iglesia<input name="church_location" placeholder="Ciudad, Estado" required /></label>
+        <label>Nombre del pastor principal<input name="pastor" placeholder="Nombre completo" required /></label>
+        <label>Rol o ministerio en la iglesia<input name="ministry" placeholder="Ej. Pastor, líder, músico" required /></label>
+        <label class="consent"><input type="checkbox" name="consent" value="true" required /> Acepto recibir información del congreso.</label>
+        <button class="button button-primary" type="submit">Completar registro ↗</button><p class="form-message" role="status"></p>
+      </form>
+    </main>
+    {% include 'footer.html' %}<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  </body>
+</html>
