@@ -9,7 +9,7 @@
   </head>
   <body>
     <header class="site-header">
-      <a class="brand" href="{{ url_for('home') }}"><span class="brand-mark" aria-hidden="true"><i></i><b></b></span><span>Avivamiento<br /><em>Mexicano</em></span></a>
+      <a class="brand" href="{{ url_for('home') }}"><img class="brand-image" src="{{ url_for('static', filename='img/logo-principal.png') }}" alt="Avivamiento Mexicano" onerror="this.hidden=true; this.nextElementSibling.hidden=false;" /><span class="brand-fallback" hidden><span class="brand-mark" aria-hidden="true"><i></i><b></b></span><span>Avivamiento<br /><em>Mexicano</em></span></span></a>
       <button class="menu-toggle" aria-label="Abrir menú" aria-expanded="false">Menu</button>
       <nav class="site-nav"><a href="#vision">Visión</a><a href="#programa">Programa</a><a href="{{ url_for('registration_page') }}">Registro</a></nav>
       <a class="header-cta" href="{{ url_for('registration_page') }}">Quiero asistir ↗</a>
