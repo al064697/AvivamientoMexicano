@@ -1,14 +1,14 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600;1,700&family=DM+Sans:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
 @font-face { font-display: swap; font-family: 'MADENZ'; src: url('../fonts/MADENZ.ttf') format('truetype'); }
 
-:root { --ink: #1d100b; --paper: #f5eee4; --orange: #e85a0b; --red: #7d1710; --gold: #f8b84e; --muted: #987e6b; --line: #60453a; }
+:root { --ink: #1d100b; --paper: #f5eee4; --orange: #e85a0b; --red: #7d1710; --gold: #f8b84e; --muted: #987e6b; --line: #60453a; --font-brand: 'MADENZ', sans-serif; --font-body: 'DM Sans', sans-serif; --font-ui: 'Space Grotesk', sans-serif; --font-quote: 'Cormorant Garamond', serif; }
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
-body { background: var(--paper); color: var(--ink); font-family: 'DM Sans', sans-serif; margin: 0; }
+body { background: var(--paper); color: var(--ink); font-family: var(--font-body); margin: 0; }
 a { color: inherit; text-decoration: none; }
 .site-header { align-items: center; display: flex; justify-content: space-between; padding: 28px 5vw; position: absolute; top: 0; width: 100%; z-index: 3; }
-.brand { align-items: center; display: flex; font-size: 13px; font-weight: 700; gap: 10px; letter-spacing: .08em; line-height: .9; text-transform: uppercase; }
+.brand { align-items: center; display: flex; font-family: var(--font-ui); font-size: 13px; font-weight: 700; gap: 10px; letter-spacing: .08em; line-height: .9; text-transform: uppercase; }
 .brand-image { display: block; height: auto; max-height: 58px; max-width: 190px; width: auto; }
 .brand-fallback { align-items: center; display: flex; gap: 10px; }
 .brand em { color: var(--orange); font-family: 'Playfair Display', serif; font-size: 15px; font-style: italic; letter-spacing: .04em; text-transform: none; }
@@ -27,9 +27,10 @@ a { color: inherit; text-decoration: none; }
 .hero::after { background: linear-gradient(90deg, transparent, rgba(237, 177, 91, .18), transparent); content: ''; height: 100%; left: 5%; pointer-events: none; position: absolute; top: 0; transform: rotate(21deg); width: 30%; }
 .hero-glow { background: radial-gradient(circle, rgba(235, 87, 11, .38), rgba(245, 238, 228, 0) 67%); height: 700px; position: absolute; right: 4%; top: -40px; width: 700px; }
 .hero-copy { position: relative; width: 49%; z-index: 1; }
-.eyebrow, .section-kicker { color: var(--orange); font-size: 10px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; }
+.eyebrow, .section-kicker { color: var(--orange); font-family: var(--font-ui); font-size: 10px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; }
 .eyebrow span { background: var(--orange); display: inline-block; height: 1px; margin: 0 12px 3px 0; width: 30px; }
-h1, h2, h3, blockquote { font-family: 'MADENZ', 'Playfair Display', serif; font-weight: 600; }
+h1, h2, h3 { font-family: var(--font-brand); font-weight: 600; }
+blockquote { font-family: var(--font-quote); font-weight: 700; }
 h1 { font-size: clamp(72px, 11vw, 168px); letter-spacing: -.05em; line-height: .79; margin: 32px 0; }
 h1 em, h2 em { color: var(--orange); font-style: italic; }
 .hero-intro, .statement-content p, .register-copy p { color: #6f5b4b; font-size: 15px; line-height: 1.7; max-width: 430px; }
@@ -64,7 +65,7 @@ h2 { font-size: clamp(45px, 6vw, 88px); letter-spacing: -.04em; line-height: .91
 .program-card-warm { background: linear-gradient(145deg, #c34a0d, #e87315 55%, #f5ac3c); }
 .program-card-dark, .stat-card { background: linear-gradient(145deg, #1d100b, #4d1a13); }
 .day-number { font-family: 'Playfair Display', serif; font-size: 52px; line-height: 1; opacity: .8; }
-.day-label, .table-label { font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+.day-label, .table-label { font-family: var(--font-ui); font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
 .program-card h3 { font-size: 42px; margin: auto 0 4px; }
 .program-card p { color: rgba(255,244,234,.72); font-size: 12px; margin: 0; }
 .quote-band { align-items: center; background: var(--orange); color: #fff0df; display: flex; flex-direction: column; padding: 110px 20px; text-align: center; }
